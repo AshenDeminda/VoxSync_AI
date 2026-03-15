@@ -1,0 +1,87 @@
+# VoxSync_AI
+# Python + local audio/ML artifacts + common IDE/OS cruft
+
+# --- Secrets / local env ---
+.env
+.env.*
+!.env.example
+
+# --- Local data (audio samples + generated outputs) ---
+data/
+
+# --- Logs / temp ---
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# --- Python bytecode / caches ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual environments ---
+.venv/
+venv/
+ENV/
+env/
+.python-version
+__pypackages__/
+
+# --- Packaging / build artifacts ---
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-wheel-metadata/
+
+# --- Test / coverage ---
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# --- Type checker / linter caches ---
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
+.pylint.d/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Gradio artifacts ---
+gradio_cached_examples/
+flagged/
+
+# --- Large model artifacts (usually downloaded; keep out of git) ---
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.bin
+
+# --- IDEs / editors ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.iml
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk

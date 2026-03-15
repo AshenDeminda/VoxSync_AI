@@ -1,0 +1,9 @@
+gradio>=4.36.0
+ollama>=0.2.1
+faster-whisper>=1.0.3
+soundfile>=0.12.1
+librosa>=0.10.2
+python-dotenv>=1.0.1
+numpy>=1.26.0
+# F5-TTS needs to be installed from source or pip if available
+f5-tts>=0.3.4
