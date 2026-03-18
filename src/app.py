@@ -1,7 +1,7 @@
 import os
 import shutil
 from pathlib import Path
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import uvicorn
@@ -10,6 +10,7 @@ import src.config as config
 from src.engines.stt_engine import STTEngine
 from src.engines.llm_engine import LLMEngine
 from src.engines.tts_engine import TTSEngine
+from src.engines.llm_engine import OllamaUnavailableError
 from src.utils.audio_tools import preprocess_for_stt, preprocess_for_tts
 
 # 1. Initialize API and AI Engines
@@ -35,8 +36,10 @@ async def chat_endpoint(
     ref_audio: UploadFile = File(...)
 ):
     # Save uploaded files temporarily
-    mic_path = TEMP_DIR / mic_audio.filename
-    ref_path = TEMP_DIR / ref_audio.filename
+    mic_filename = Path(mic_audio.filename or "mic_input").name
+    ref_filename = Path(ref_audio.filename or "ref_audio").name
+    mic_path = TEMP_DIR / mic_filename
+    ref_path = TEMP_DIR / ref_filename
     
     with open(mic_path, "wb") as buffer:
         shutil.copyfileobj(mic_audio.file, buffer)
@@ -44,11 +47,17 @@ async def chat_endpoint(
         shutil.copyfileobj(ref_audio.file, buffer)
 
     # Process Audio -> STT -> LLM -> TTS
-    clean_mic = preprocess_for_stt(str(mic_path))
-    clean_ref = preprocess_for_tts(str(ref_path))
+    try:
+        clean_mic = preprocess_for_stt(str(mic_path))
+        clean_ref = preprocess_for_tts(str(ref_path))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     
     user_text = stt.transcribe(clean_mic)
-    ai_text = llm.chat(user_text)
+    try:
+        ai_text = llm.chat(user_text)
+    except OllamaUnavailableError as e:
+        raise HTTPException(status_code=503, detail=str(e))
     output_audio_path = tts.generate(ai_text, clean_ref)
 
     # Return the AI text and the URL to fetch the generated audio
